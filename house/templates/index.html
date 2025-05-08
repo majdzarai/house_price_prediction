@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Estimation du Prix d'une Maison</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    .error-message {
+      color: red;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background-color: #ffecec;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid red;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🏡 Estimez le Prix de Votre Maison</h1>
+
+    {% if error %}
+      <div class="error-message">{{ error }}</div>
+    {% endif %}
+
+    <form id="prediction-form" action="/predict" method="POST">
+      {% for field in limits %}
+        <label for="{{ field }}">{{ field.replace('_', ' ').title() }}</label>
+        <input
+          type="number"
+          step="any"
+          name="{{ field }}"
+          id="{{ field }}"
+          required
+          min="{{ limits[field]['min'] }}"
+          max="{{ limits[field]['max'] }}"
+        >
+      {% endfor %}
+      <button type="submit">Prédire</button>
+    </form>
+  </div>
+
+  <!-- Validation JS stricte -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const form = document.getElementById("prediction-form");
+      const inputs = form.querySelectorAll("input[type='number']");
+
+      inputs.forEach(input => {
+        input.addEventListener("input", function () {
+          const val = parseFloat(this.value);
+          const min = parseFloat(this.min);
+          const max = parseFloat(this.max);
+
+          if (isNaN(val)) return;
+
+          if (val < min) this.value = min;
+          if (val > max) this.value = max;
+        });
+      });
+
+      form.addEventListener("submit", function (e) {
+        for (let input of inputs) {
+          const val = parseFloat(input.value);
+          const min = parseFloat(input.min);
+          const max = parseFloat(input.max);
+          if (val < min || val > max || isNaN(val)) {
+            alert(`❌ Le champ "${input.name}" doit être entre ${min} et ${max}.`);
+            e.preventDefault();
+            return;
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

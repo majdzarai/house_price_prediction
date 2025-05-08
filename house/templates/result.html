@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Résultat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>💰 Estimation du prix</h1>
+        <p>Le prix estimé de la maison est :</p>
+        <h2>{{ prediction | round(2) }} $</h2>
+        <a href="/">⏪ Retour</a>
+    </div>
+</body>
+</html>
